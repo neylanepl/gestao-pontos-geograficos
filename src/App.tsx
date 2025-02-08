@@ -3,6 +3,8 @@ import { MapComponent } from './components/MapComponent';
 import { PointForm } from './components/PointForm';
 import { PointList } from './components/PointList';
 import { fetchPoints, Point } from './fakeApi';
+import { Toaster } from "react-hot-toast";
+import Swal from "sweetalert2";
 
 export const App = () => {
   const [points, setPoints] = useState<Point[]>([]);
@@ -28,7 +30,21 @@ export const App = () => {
   };
 
   const handleDeletePoint = (id: string) => {
-    setPoints(points.filter((p) => p.id !== id));
+    Swal.fire({
+      title: "Tem certeza?",
+      text: "Essa ação não pode ser desfeita!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#2563eb",
+      confirmButtonText: "Sim, excluir!",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setPoints(points.filter((p) => p.id !== id));
+        Swal.fire("Excluído!", "O ponto foi removido.", "success");
+      }
+    });
   };
 
   const handleMapClick = (lat: number, lng: number) => {
@@ -39,6 +55,7 @@ export const App = () => {
 
   return (
     <div className="flex flex-row h-screen w-scree">
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="w-[50vw] h-[100vh]">
         <MapComponent points={points} onMapClick={handleMapClick} />
       </div>

@@ -1,4 +1,5 @@
 import { Point } from '../fakeApi';
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 interface PointListProps {
   points: Point[];
@@ -17,18 +18,18 @@ export const PointList = ({ points, onEdit, onDelete }: PointListProps) => {
             <p className="text-sm text-gray-700 mt-1">{point.description}</p>
             <p className="text-sm text-gray-700 mt-1">Valor: R$ {point.value}</p>
             <p className="text-sm text-gray-700 mt-1">Badges: {point.badges.join(', ')}</p>
-            <div className="mt-4 space-x-2">
+            <div className="mt-4 space-x-2 flex">
               <button
                 onClick={() => onEdit(point)}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-1"
               >
-                Editar
+                <PencilIcon className="w-5 h-5" /> Editar
               </button>
               <button
                 onClick={() => onDelete(point.id)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center gap-1"
               >
-                Excluir
+                <TrashIcon className="w-5 h-5" /> Excluir
               </button>
             </div>
           </li>
