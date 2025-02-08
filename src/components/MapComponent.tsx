@@ -1,28 +1,45 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Point } from '../fakeApi';
 
-// Fix para ícones do Leaflet
+
 const defaultIcon = L.icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+    iconRetinaUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
     shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
 });
 
+
+const tempIcon = L.icon({
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+    iconRetinaUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+});
+
+const MapAutoCenter = ({ lat, lng }: { lat: number; lng: number }) => {
+    const map = useMap();
+  
+    useEffect(() => {
+      if (lat && lng) {
+        map.setView([lat, lng], 13);
+      }
+    }, [lat, lng, map]);
+  
+    return null;
+};
+
 interface MapComponentProps {
     points: Point[];
-    onMapClick?: (lat: number, lng: number) => void;
+    tempPoint?: {lat: number, lng: number} | null;
 }
 
-function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: number) => void }) {
-    useMapEvent('click', (e) => onMapClick?.(e.latlng.lat, e.latlng.lng));
-    return null;
-}
-
-export const MapComponent = ({ points, onMapClick }: MapComponentProps) => {
+export const MapComponent = ({ points, tempPoint }: MapComponentProps) => {
     return (
         <div className="w-full h-full rounded-lg shadow-md overflow-hidden">
             <MapContainer
@@ -35,7 +52,9 @@ export const MapComponent = ({ points, onMapClick }: MapComponentProps) => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-                <MapClickHandler onMapClick={onMapClick} />
+
+                {tempPoint && <MapAutoCenter lat={tempPoint.lat} lng={tempPoint.lng} />}
+             
                 {points.map((point) => (
                     <Marker key={point.id} position={[point.lat, point.lng]} icon={defaultIcon}>
                         <Popup className="w-64 p-4 bg-white rounded-lg shadow-lg">
@@ -46,6 +65,14 @@ export const MapComponent = ({ points, onMapClick }: MapComponentProps) => {
                         </Popup>
                     </Marker>
                 ))}
+
+                {tempPoint && (
+                    <Marker position={[tempPoint.lat, tempPoint.lng]} icon={tempIcon}>
+                        <Popup>
+                        <p>Prévia do ponto (não salvo)</p>
+                        </Popup>
+                    </Marker>
+                )}
             </MapContainer>
         </div>
     );

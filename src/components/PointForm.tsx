@@ -5,9 +5,10 @@ import { toast } from "react-hot-toast";
 interface PointFormProps {
   point?: Point;
   onSubmit: (point: Omit<Point, "id">) => void;
+  onTempChange: (lat: number, lng: number) => void;
 }
 
-export const PointForm = ({ point, onSubmit }: PointFormProps) => {
+export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [value, setValue] = useState(0);
@@ -40,6 +41,7 @@ export const PointForm = ({ point, onSubmit }: PointFormProps) => {
       return;
     }
     setLat(value);
+    onTempChange(value, lng);
   };
   
   const handleLngChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +51,7 @@ export const PointForm = ({ point, onSubmit }: PointFormProps) => {
       return;
     }
     setLng(value);
+    onTempChange(lat, value);
   };
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,8 +77,13 @@ export const PointForm = ({ point, onSubmit }: PointFormProps) => {
         lng,
         badges: badges.split(",").map((b) => b.trim()),
       });
-      
       toast.success("Ponto salvo com sucesso!");
+      setName("");
+      setDescription("");
+      setValue(0);
+      setLat(0);
+      setLng(0);
+      setBadges("");
     } catch (error) {
       toast.error("Erro ao salvar o ponto.");
     }
