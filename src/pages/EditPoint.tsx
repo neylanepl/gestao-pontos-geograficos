@@ -1,0 +1,57 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { MapComponent } from '../components/MapComponent';
+import { PointForm } from '../components/PointForm';
+import { Point } from '../fakeApi';
+import { Toaster } from "react-hot-toast";
+import { usePoints } from "../context/PointsContext";
+import { toast } from "react-hot-toast";
+
+
+export const EditPoint = () => {
+    const { id } = useParams();
+    const {points, setPoints} = usePoints();
+    const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
+    const [tempPoint, setTempPoint] = useState<{ lat: number; lng: number } | null>(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const foundPoint = points.find((p) => p.id.toString() === id);
+        setSelectedPoint(foundPoint || null);
+
+        if (foundPoint) {
+          setTempPoint({ lat: foundPoint.lat, lng: foundPoint.lng });
+        }
+    }, [id, points]);
+
+    const handleUpdatePoint = (updatedPoint: Omit<Point, 'id'>) => {
+        setPoints((prevPoints) =>
+            prevPoints.map((p) =>
+            p.id === selectedPoint?.id ? { ...updatedPoint, id: p.id } : p
+        ));
+    
+        toast.success("Ponto atualizado com sucesso!");
+
+        setSelectedPoint(null);
+        setTempPoint(null);
+        navigate("/");
+    };
+
+  return (
+    <div className="flex flex-row h-screen w-scree">
+      <Toaster position="top-right" reverseOrder={false} />
+      <div className="w-[50vw] h-[100vh]">
+        <MapComponent points={points} tempPoint={tempPoint} />
+      </div>
+      <div className="w-[50vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200">
+        <h1 className="text-2xl font-bold mb-4 text-center">Compras por Local</h1>
+        <PointForm
+          point={selectedPoint ?? undefined}
+          onSubmit={handleUpdatePoint}
+          onTempChange={(lat, lng) => setTempPoint({ lat, lng })}
+          isEditing={true}
+        />
+      </div>
+    </div>
+  );
+};

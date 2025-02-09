@@ -22,6 +22,21 @@ const tempIcon = L.icon({
     iconAnchor: [12, 41],
 });
 
+const CustomZoomControl = () => {
+    const map = useMap();
+  
+    useEffect(() => {
+      const zoomControl = L.control.zoom({ position: "bottomright" });
+      zoomControl.addTo(map);
+  
+      return () => {
+        zoomControl.remove();
+      };
+    }, [map]);
+  
+    return null;
+};
+
 const MapAutoCenter = ({ lat, lng }: { lat: number; lng: number }) => {
     const map = useMap();
   
@@ -37,9 +52,10 @@ const MapAutoCenter = ({ lat, lng }: { lat: number; lng: number }) => {
 interface MapComponentProps {
     points: Point[];
     tempPoint?: {lat: number, lng: number} | null;
+    isSelect?: boolean;
 }
 
-export const MapComponent = ({ points, tempPoint }: MapComponentProps) => {
+export const MapComponent = ({ points, tempPoint, isSelect }: MapComponentProps) => {
     return (
         <div className="w-full h-full rounded-lg shadow-md overflow-hidden">
             <MapContainer
@@ -47,11 +63,14 @@ export const MapComponent = ({ points, tempPoint }: MapComponentProps) => {
                 zoom={13}
                 style={{ height: '100%', width: '100%' }}
                 className="rounded-lg"
+                zoomControl={false}
             >
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
+
+                <CustomZoomControl />
 
                 {tempPoint && <MapAutoCenter lat={tempPoint.lat} lng={tempPoint.lng} />}
              
@@ -66,7 +85,7 @@ export const MapComponent = ({ points, tempPoint }: MapComponentProps) => {
                     </Marker>
                 ))}
 
-                {tempPoint && (
+                {tempPoint && !isSelect && (
                     <Marker position={[tempPoint.lat, tempPoint.lng]} icon={tempIcon}>
                         <Popup>
                         <p>Prévia do ponto (não salvo)</p>
