@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 
 export const EditPoint = () => {
     const { id } = useParams();
-    const {points, setPoints} = usePoints();
+    const {points, setPoints, setLastEditedPoint} = usePoints();
     const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
     const [tempPoint, setTempPoint] = useState<{ lat: number; lng: number } | null>(null);
     const navigate = useNavigate();
@@ -24,12 +24,22 @@ export const EditPoint = () => {
         }
     }, [id, points]);
 
+    const handleMapClick = (lat: number, lng: number) => {
+      setTempPoint({ lat, lng });
+      setSelectedPoint((prev) => 
+        prev ? { ...prev, lat, lng } : null
+      );
+    };
+
     const handleUpdatePoint = (updatedPoint: Omit<Point, 'id'>) => {
+        const newPoint = { ...updatedPoint, id: selectedPoint?.id || "" };
+
         setPoints((prevPoints) =>
             prevPoints.map((p) =>
-            p.id === selectedPoint?.id ? { ...updatedPoint, id: p.id } : p
+            p.id === selectedPoint?.id ? newPoint : p
         ));
-    
+        
+        setLastEditedPoint(newPoint);
         toast.success("Ponto atualizado com sucesso!");
 
         setSelectedPoint(null);
@@ -40,16 +50,15 @@ export const EditPoint = () => {
   return (
     <div className="flex flex-row h-screen w-scree">
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="w-[50vw] h-[100vh]">
-        <MapComponent points={points} tempPoint={tempPoint} />
+      <div className="w-[65vw] h-[100vh]">
+        <MapComponent points={points} tempPoint={tempPoint} onMapClick={handleMapClick}/>
       </div>
-      <div className="w-[50vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200">
-        <h1 className="text-2xl font-bold mb-4 text-center">Compras por Local</h1>
+      <div className="w-[35vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200">
+        <h1 className="text-2xl font-bold mb-4 text-center">Editar Ponto Cadastrado</h1>
         <PointForm
           point={selectedPoint ?? undefined}
           onSubmit={handleUpdatePoint}
           onTempChange={(lat, lng) => setTempPoint({ lat, lng })}
-          isEditing={true}
         />
       </div>
     </div>

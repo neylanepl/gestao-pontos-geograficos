@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { usePoints } from "../context/PointsContext";
 import { MapComponent } from '../components/MapComponent';
@@ -6,11 +6,46 @@ import { PointList } from '../components/PointList';
 import { Point } from '../fakeApi';
 import { Toaster } from "react-hot-toast";
 import Swal from "sweetalert2";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
 export const ListPoints = () => {
-  const { points, setPoints, isLoading } = usePoints();
+  const { points, setPoints, isLoading, lastAddedPoint, lastEditedPoint } = usePoints();
   const navigate = useNavigate();
-  const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<Point | null>(lastAddedPoint);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPoints, setFilteredPoints] = useState<Point[]>(points);
+
+  useEffect(() => {
+    if (lastEditedPoint) {
+      setSelectedPoint(lastEditedPoint);
+    } else if (lastAddedPoint) {
+      setSelectedPoint(lastAddedPoint);
+    }
+  }, [lastEditedPoint, lastAddedPoint]);
+
+  useEffect(() => {
+    setFilteredPoints(points); 
+  }, [points]);
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredPoints(points);
+    }
+  }, [searchTerm, points]);
+
+  const handleSearch = () => {
+    if (searchTerm.trim() === "") {
+      setFilteredPoints(points); // Se busca vazia, mostra todos os pontos
+    } else {
+      setFilteredPoints(
+        points.filter((point) =>
+          point.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          point.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          point.badges.some((badge) => badge.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
+      );
+    }
+  };
 
   const handleSelectPoint = (point: Point) => {
     setSelectedPoint(point);
@@ -27,7 +62,7 @@ export const ListPoints = () => {
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#dc2626",
-      cancelButtonColor: "#2563eb",
+      cancelButtonColor: "#6B7280",
       confirmButtonText: "Sim, excluir!",
       cancelButtonText: "Cancelar",
     }).then((result) => {
@@ -46,25 +81,43 @@ export const ListPoints = () => {
   return (
     <div className="flex flex-row h-screen w-scree">
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="w-[50vw] h-[100vh]">
-        <MapComponent points={points} tempPoint={selectedPoint} isSelect={true}/>
+      <div className="w-[65vw] h-[100vh]">
+        <MapComponent points={filteredPoints} tempPoint={selectedPoint} isSelect={true}/>
       </div>
-      <div className="w-[50vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200 overflow-y-auto max-h-screen">
-      <button
-        className="bg-blue-600 text-white px-4 py-2 rounded-md mb-4"
-        onClick={() => navigate("/register")}
-      >
-        Cadastrar Ponto
-      </button>
-      {isLoading ? (
-          <div className="flex justify-center items-center h-full">
-            <div className="animate-bounce w-10 h-10 bg-blue-500 rounded-full"></div>
-            <div className="text-centers p-2 py-4">Carregando pontos...</div>
-          </div>
+
+      <div className="w-[35vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200 overflow-y-auto max-h-screen">
+        <h1 className="text-2xl pr-6 pl-6 font-bold mb-4 text-center">Pontos Cadastrados</h1>
+        <div className="relative pr-6 pl-6 flex items-center">
+          <input
+            type="text"
+            placeholder="Buscar pontos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border border-gray-300 rounded-md w-full pr-10 bg-white"
+          />
+          <button
+            onClick={handleSearch}
+            className="absolute right-10 flex items-center justify-center"
+          >
+            <div className="group relative flex items-center">
+              <MagnifyingGlassIcon className="w-5 h-5 text-gray-500" />
+              <span className="absolute bottom-full mb-1 px-2 py-1 text-xs text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                Buscar
+              </span>
+            </div>
+          </button>
           
-      ) : (
-        <PointList points={points} onEdit={handleEdit} onDelete={handleDeletePoint} onSelect={handleSelectPoint}/>
-      )}
+        </div>
+        
+        {isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <div className="animate-bounce w-10 h-10 bg-blue-500 rounded-full"></div>
+              <div className="text-centers p-2 py-4">Carregando pontos...</div>
+            </div>
+            
+        ) : (
+          <PointList points={filteredPoints} onEdit={handleEdit} onDelete={handleDeletePoint} onSelect={handleSelectPoint}/>
+        )}
         
       </div>
     </div>

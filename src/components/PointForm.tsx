@@ -4,13 +4,12 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 interface PointFormProps {
-  point?: Point;
+  point?: Omit<Point, "id">;
   onSubmit: (point: Omit<Point, "id">) => void;
   onTempChange: (lat: number, lng: number) => void;
-  isEditing?: boolean; 
 }
 
-export const PointForm = ({ point, onSubmit, onTempChange, isEditing = false }: PointFormProps) => {
+export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -159,19 +158,18 @@ export const PointForm = ({ point, onSubmit, onTempChange, isEditing = false }: 
         />
       </div>
       <div className="flex justify-between">
-        {isEditing && (
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="bg-gray-500 text-white px-16 py-2 rounded-md hover:bg-gray-600"
-          >
-            Voltar
-          </button>
-        )}
+
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="bg-gray-500 text-white px-16 py-2 rounded-md hover:bg-gray-600 cursor-pointer"
+        >
+          Voltar
+        </button>
         
         <button
           type="submit"
-          className={`bg-green-600 text-white ${!isEditing ? 'w-full' : 'px-16'} py-2 rounded-md hover:bg-green-700`}
+          className={"bg-green-600 text-white px-16 py-2 rounded-md hover:bg-green-700 cursor-pointer"}
         >
           Salvar
         </button>
