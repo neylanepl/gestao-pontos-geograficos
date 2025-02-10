@@ -8,9 +8,10 @@ interface PointFormProps {
   onSubmit: (point: Omit<Point, "id">) => void;
   onTempChange: (lat: number, lng: number) => void;
   isRegister?: boolean;
+  latLngFromMap?: boolean;
 }
 
-export const PointForm = ({ point, onSubmit, onTempChange, isRegister = false }: PointFormProps) => {
+export const PointForm = ({ point, onSubmit, onTempChange, isRegister = false, latLngFromMap = false }: PointFormProps) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -23,16 +24,17 @@ export const PointForm = ({ point, onSubmit, onTempChange, isRegister = false }:
 
   useEffect(() => {
     if (point) {
-      setFormData({
-        name: point.name,
-        description: point.description,
-        value: point.value,
+      setFormData((prev) => ({
+        ...prev,
+        name: latLngFromMap ? prev.name : point.name,
+        description: latLngFromMap ? prev.description : point.description,
+        value: latLngFromMap ? prev.value : point.value,
         lat: point.lat,
         lng: point.lng,
-        badges: point.badges.join(", "),
-      });
+        badges: latLngFromMap ? prev.badges : point.badges.join(", "),
+      }));
     }
-  }, [point]);
+  }, [point, latLngFromMap]);
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

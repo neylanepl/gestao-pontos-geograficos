@@ -12,12 +12,12 @@ export const EditPoint = () => {
     const {points, setPoints, setLastEditedPoint} = usePoints();
     const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
     const [tempPoint, setTempPoint] = useState<{ lat: number; lng: number } | null>(null);
+    const [latLngFromMap, setLatLngFromMap] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const foundPoint = points.find((p) => p.id.toString() === id);
         setSelectedPoint(foundPoint || null);
-
         if (foundPoint) {
           setTempPoint({ lat: foundPoint.lat, lng: foundPoint.lng });
         }
@@ -25,6 +25,7 @@ export const EditPoint = () => {
 
     const handleMapClick = (lat: number, lng: number) => {
       setTempPoint({ lat, lng });
+      setLatLngFromMap(true);
       setSelectedPoint((prev) => 
         prev ? { ...prev, lat, lng } : null
       );
@@ -50,8 +51,7 @@ export const EditPoint = () => {
       </div>
       <div className="w-[35vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200">
         <h1 className="text-2xl font-bold mb-4 text-center">Editar Ponto Cadastrado</h1>
-        <PointForm point={selectedPoint ?? undefined} onSubmit={handleUpdatePoint} onTempChange={(lat, lng) => setTempPoint({ lat, lng })}
-        />
+        <PointForm point={selectedPoint ?? undefined} onSubmit={handleUpdatePoint} onTempChange={(lat, lng) => setTempPoint({ lat, lng })} latLngFromMap={latLngFromMap}/>
       </div>
     </div>
   );

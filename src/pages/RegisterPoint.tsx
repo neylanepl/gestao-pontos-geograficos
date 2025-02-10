@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 export const RegisterPoint = () => {
   const {points, setPoints, setLastAddedPoint} = usePoints();
   const [tempPoint, setTempPoint] = useState<{ lat: number; lng: number } | null>(null);
+  const [latLngFromMap, setLatLngFromMap] = useState(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ export const RegisterPoint = () => {
 
   const handleMapClick = (lat: number, lng: number) => {
     setTempPoint({ lat, lng });
+    setLatLngFromMap(true);
     setFormData((prev) => ({ ...prev, lat, lng }));
   };
 
@@ -39,7 +41,7 @@ export const RegisterPoint = () => {
       </div>
       <div className="w-[35vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200">
         <h1 className="text-2xl font-bold mb-4 text-center">Cadastrar Compras por Local</h1>
-        <PointForm point={formData} onSubmit={handleAddPoint} onTempChange={(lat, lng) => setTempPoint({ lat, lng })} isRegister={true}/>
+        <PointForm point={formData} onSubmit={handleAddPoint} onTempChange={(lat, lng) => setTempPoint({ lat, lng })} isRegister={true} latLngFromMap={latLngFromMap}/>
       </div>
     </div>
   );
