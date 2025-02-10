@@ -21,7 +21,6 @@ const PointsContext = createContext<PointsContextType>({
   setLastEditedPoint: () => {},
 });
 
-
 interface PointsProviderProps {
   children: ReactNode;
 }

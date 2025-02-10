@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { Tooltip } from "react-leaflet";
 
-
 const defaultIcon = L.icon({
     iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
     iconRetinaUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
@@ -15,7 +14,6 @@ const defaultIcon = L.icon({
     iconSize: [25, 41],
     iconAnchor: [12, 41],
 });
-
 
 const tempIcon = L.icon({
     iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -27,37 +25,31 @@ const tempIcon = L.icon({
 
 const CustomZoomControl = () => {
     const map = useMap();
-  
     useEffect(() => {
       const zoomControl = L.control.zoom({ position: "bottomright" });
       zoomControl.addTo(map);
-  
       return () => {
         zoomControl.remove();
       };
     }, [map]);
-  
     return null;
 };
 
 const MapAutoCenter = ({ lat, lng }: { lat: number; lng: number }) => {
     const map = useMap();
-  
     useEffect(() => {
       if (lat && lng) {
         map.setView([lat, lng], 13);
       }
     }, [lat, lng, map]);
-  
     return null;
 };
 
-
 const MapClickHandler = ({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) => {
-  useMapEvent("click", (e) => {
-    onMapClick(e.latlng.lat, e.latlng.lng);
-  });
-  return null;
+    useMapEvent("click", (e) => {
+        onMapClick(e.latlng.lat, e.latlng.lng);
+    });
+    return null;
 };
 
 interface MapComponentProps {
@@ -69,41 +61,27 @@ interface MapComponentProps {
 
 export const MapComponent = ({ points, tempPoint, isSelect, onMapClick }: MapComponentProps) => {
     const navigate = useNavigate();
+
     return (
         <div className="relative w-full h-full rounded-lg shadow-md overflow-hidden">
             <div className="absolute top-4 right-4 z-[1000]">
                 <button
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center gap-1"
-                onClick={() => navigate("/register")}
+                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center gap-1"
+                    onClick={() => navigate("/register")}
                 >
                 <PlusIcon className="w-5 h-5" /> Cadastrar Ponto
                 </button>
             </div>
-            <MapContainer
-                center={[-15.77972, -47.92972]}
-                zoom={13}
-                style={{ height: '100%', width: '100%' }}
-                className="rounded-lg"
-                zoomControl={false}
-            >
+            <MapContainer center={[-15.77972, -47.92972]} zoom={13} style={{ height: '100%', width: '100%' }} className="rounded-lg" zoomControl={false}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-
                 <CustomZoomControl />
-                
                 {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
-
                 {tempPoint && <MapAutoCenter lat={tempPoint.lat} lng={tempPoint.lng} />}
-             
                 {points.map((point) => (
-                    <Marker key={point.id} position={[point.lat, point.lng]} icon={defaultIcon} 
-                        eventHandlers={{
-                            mouseover: (e) => e.target.openPopup(),
-                            mouseout: (e) => e.target.closePopup(),
-                        }}
-                    >   
+                    <Marker key={point.id} position={[point.lat, point.lng]} icon={defaultIcon} eventHandlers={{mouseover: (e) => e.target.openPopup(), mouseout: (e) => e.target.closePopup(),}}>   
                          <Tooltip direction="top" offset={[0, -40]} permanent>
                             <strong className="text-md font-semibold text-gray-800">{point.name}</strong>
                         </Tooltip>
@@ -115,7 +93,6 @@ export const MapComponent = ({ points, tempPoint, isSelect, onMapClick }: MapCom
                         </Popup>
                     </Marker>
                 ))}
-
                 {tempPoint && !isSelect && (
                     <Marker position={[tempPoint.lat, tempPoint.lng]} icon={tempIcon}>
                         <Popup>

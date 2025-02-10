@@ -7,34 +7,36 @@ interface PointFormProps {
   point?: Omit<Point, "id">;
   onSubmit: (point: Omit<Point, "id">) => void;
   onTempChange: (lat: number, lng: number) => void;
+  isRegister?: boolean;
 }
 
-export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => {
+export const PointForm = ({ point, onSubmit, onTempChange, isRegister = false }: PointFormProps) => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [value, setValue] = useState(0);
-  const [lat, setLat] = useState(0);
-  const [lng, setLng] = useState(0);
-  const [badges, setBadges] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    value: 0,
+    lat: 0,
+    lng: 0,
+    badges: "",
+  });
 
   useEffect(() => {
     if (point) {
-      setName(point.name);
-      setDescription(point.description);
-      setValue(point.value);
-      setLat(point.lat);
-      setLng(point.lng);
-      setBadges(point.badges.join(", "));
-    } else {
-      setName("");
-      setDescription("");
-      setValue(0);
-      setLat(0);
-      setLng(0);
-      setBadges("");
+      setFormData({
+        name: point.name,
+        description: point.description,
+        value: point.value,
+        lat: point.lat,
+        lng: point.lng,
+        badges: point.badges.join(", "),
+      });
     }
   }, [point]);
+
+  const handleInputChange = (field: string, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleLatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -42,8 +44,8 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
       toast.error("A latitude deve estar entre -90 e 90.");
       return;
     }
-    setLat(value);
-    onTempChange(value, lng);
+    handleInputChange("lat", value);
+    onTempChange(value, formData.lng);
   };
   
   const handleLngChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,44 +54,27 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
       toast.error("A longitude deve estar entre -180 e 180.");
       return;
     }
-    setLng(value);
-    onTempChange(lat, value);
+    handleInputChange("lng", value);
+    onTempChange(formData.lat, value);
   };
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = Number(e.target.value);
-  
     if (inputValue < 0) {
       toast.error("O valor não pode ser negativo!");
       return;
     }
-  
-    setValue(inputValue);
+    handleInputChange("value", inputValue)
   };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      onSubmit({
-        name,
-        description,
-        value,
-        lat,
-        lng,
-        badges: badges.split(",").map((b) => b.trim()),
-      });
-      
-      if (!point) {
+      onSubmit({ ...formData, badges: formData.badges.split(",").map((b) => b.trim()) });
+      if (isRegister) {
         toast.success("Ponto salvo com sucesso!");
+        setFormData({ name: "", description: "", value: 0, lat: 0, lng: 0, badges: "" });
       }
-      
-      setName("");
-      setDescription("");
-      setValue(0);
-      setLat(0);
-      setLng(0);
-      setBadges("");
     } catch (error) {
       toast.error("Erro ao salvar o ponto.");
     }
@@ -101,8 +86,8 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
         <label className="block text-sm font-medium text-gray-700">Nome:*</label>
         <input
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={formData.name}
+          onChange={(e) => handleInputChange("name", e.target.value)}
           required
           className="mt-1 p-2 w-full border border-gray-300 rounded-md"
         />
@@ -111,8 +96,8 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
         <label className="block text-sm font-medium text-gray-700">Descrição:*</label>
         <input
           type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={formData.description}
+          onChange={(e) => handleInputChange("description", e.target.value)}
           required
           className="mt-1 p-2 w-full border border-gray-300 rounded-md"
         />
@@ -121,7 +106,7 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
         <label className="block text-sm font-medium text-gray-700">Valor:*</label>
         <input
           type="number"
-          value={value}
+          value={formData.value}
           onChange={handleValueChange}
           required
           className="mt-1 p-2 w-full border border-gray-300 rounded-md"
@@ -131,7 +116,7 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
         <label className="block text-sm font-medium text-gray-700">Latitude:*</label>
         <input
           type="number"
-          value={lat}
+          value={formData.lat}
           onChange={handleLatChange}
           required
           className={"mt-1 p-2 w-full border border-gray-300 rounded-md"}
@@ -141,7 +126,7 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
         <label className="block text-sm font-medium text-gray-700">Longitude:*</label>
         <input
           type="number"
-          value={lng}
+          value={formData.lng}
           onChange={handleLngChange}
           required
           className={"mt-1 p-2 w-full border border-gray-300 rounded-md"}
@@ -151,14 +136,13 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
         <label className="block text-sm font-medium text-gray-700">Badges (separados por vírgula):*</label>
         <input
           type="text"
-          value={badges}
-          onChange={(e) => setBadges(e.target.value)}
+          value={formData.badges}
+          onChange={(e) => handleInputChange("badges", e.target.value)}
           required
           className="mt-1 p-2 w-full border border-gray-300 rounded-md"
         />
       </div>
       <div className="flex justify-between">
-
         <button
           type="button"
           onClick={() => navigate("/")}
@@ -166,7 +150,6 @@ export const PointForm = ({ point, onSubmit, onTempChange }: PointFormProps) => 
         >
           Voltar
         </button>
-        
         <button
           type="submit"
           className={"bg-green-600 text-white px-16 py-2 rounded-md hover:bg-green-700 cursor-pointer"}

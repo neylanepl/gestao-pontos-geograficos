@@ -3,7 +3,6 @@ import { MapComponent } from '../components/MapComponent';
 import { PointForm } from '../components/PointForm';
 import { usePoints } from "../context/PointsContext";
 import {  Point } from '../fakeApi';
-import { Toaster } from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
 
 export const RegisterPoint = () => {
@@ -34,18 +33,13 @@ export const RegisterPoint = () => {
   };
 
   return (
-    <div className="flex flex-row h-screen w-scree">
-      <Toaster position="top-right" reverseOrder={false} />
+    <div className="flex flex-row h-screen w-screen">
       <div className="w-[65vw] h-[100vh]">
         <MapComponent points={points} tempPoint={tempPoint} onMapClick={handleMapClick} />
       </div>
       <div className="w-[35vw] flex flex-col p-4 bg-gray-50 border-t border-gray-200">
         <h1 className="text-2xl font-bold mb-4 text-center">Cadastrar Compras por Local</h1>
-        <PointForm
-          point={formData}
-          onSubmit={handleAddPoint}
-          onTempChange={(lat, lng) => setTempPoint({ lat, lng })}
-        />
+        <PointForm point={formData} onSubmit={handleAddPoint} onTempChange={(lat, lng) => setTempPoint({ lat, lng })} isRegister={true}/>
       </div>
     </div>
   );

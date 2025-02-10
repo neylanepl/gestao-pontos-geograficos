@@ -12,7 +12,7 @@ export const PointList = ({ points, onEdit, onDelete, onSelect }: PointListProps
   return (
     <div className="max-w-4xl mx-auto p-6">
       {points.length === 0 ? (
-        <p className="text-center text-gray-500">Nenhum ponto encontrado.</p>
+        <p className="text-center">Nenhum ponto encontrado.</p>
       ) : (
       <ul className="space-y-4">
         {points.map((point) => (
