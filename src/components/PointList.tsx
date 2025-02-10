@@ -1,4 +1,4 @@
-import { Point } from '../fakeApi';
+import { Point } from '../mockes/fakeApi';
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 interface PointListProps {

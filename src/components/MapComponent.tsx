@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Point } from '../fakeApi';
+import { Point } from '../mockes/fakeApi';
 import { useNavigate } from "react-router-dom";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { Tooltip } from "react-leaflet";

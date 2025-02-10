@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Point } from "../fakeApi";
+import { Point } from "../mockes/fakeApi";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 

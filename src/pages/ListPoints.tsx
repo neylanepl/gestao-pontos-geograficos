@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { usePoints } from "../context/PointsContext";
 import { MapComponent } from '../components/MapComponent';
 import { PointList } from '../components/PointList';
-import { Point } from '../fakeApi';
+import { Point } from '../mockes/fakeApi';
 import Swal from "sweetalert2";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 

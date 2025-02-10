@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapComponent } from '../components/MapComponent';
 import { PointForm } from '../components/PointForm';
-import { Point } from '../fakeApi';
+import { Point } from '../mockes/fakeApi';
 import { usePoints } from "../context/PointsContext";
 import { toast } from "react-hot-toast";
 

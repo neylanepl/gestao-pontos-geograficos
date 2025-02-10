@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { MapComponent } from '../components/MapComponent';
 import { PointForm } from '../components/PointForm';
 import { usePoints } from "../context/PointsContext";
-import {  Point } from '../fakeApi';
+import {  Point } from '../mockes/fakeApi';
 import { useNavigate } from 'react-router-dom';
 
 export const RegisterPoint = () => {

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { fetchPoints, Point } from "../fakeApi";
+import { fetchPoints, Point } from "../mockes/fakeApi";
 
 interface PointsContextType {
   points: Point[];
